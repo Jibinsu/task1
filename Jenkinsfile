@@ -41,13 +41,13 @@ pipeline {
         stage('Run Flask App Container') {
             steps {
                 echo "Running Flask app container"
-                sh "docker run -d --name flask-app flask-app"
+                sh "docker run -d --network flasknetwork --name flask-app flask-app"
             }
         }
         stage('Run NGINX Container') {
             steps {
                 echo "Running NGINX container"
-                sh "docker run -d -p 80:80 --name mynginx mynginx "
+                sh "docker run -d -p 80:80 --network flasknetwork --name mynginx mynginx "
             }
         }
     }
