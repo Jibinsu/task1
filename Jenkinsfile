@@ -1,6 +1,7 @@
 pipeline {
     agent any
     environment {
+        createnetwork= "Create Network"
         flaskappimage= "flask_app_image"
         nginximage = "nginx_image"
         flaskappcont = "flask_app_container"
@@ -14,6 +15,15 @@ pipeline {
                 sh './cleanup.sh'
             }
         }
+
+        stage('Create Network'){
+            steps {
+                sh "echo 'creating network'"
+                sh 'docker network create flasknetwork || true'
+            }
+
+        }
+
         stage('Build Flask App Image') {
             steps {
                 sh "echo 'Building Flask app image'" 
