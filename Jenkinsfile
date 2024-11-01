@@ -79,10 +79,10 @@ pipeline {
                         # Deactivate the virtual environment
                         deactivate
                         '''
-                    } 
+                        } 
                     }
                 }
             }
         }
     }
-}
+
