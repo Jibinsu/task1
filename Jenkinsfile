@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        createnetwork= "Create Network"
-        flaskappimage= "flask_app_image"
+        createnetwork = "Create Network"
+        flaskappimage = "flask_app_image"
         nginximage = "nginx_image"
         flaskappcont = "flask_app_container"
         nginxcont = "nginx_container"
@@ -16,72 +16,75 @@ pipeline {
             }
         }
 
-        stage('Create Network'){
+        stage('Create Network') {
             steps {
                 sh "echo 'creating network'"
                 sh 'docker network create flasknetwork || true'
             }
-
         }
 
         stage('Build Flask App Image') {
             steps {
                 sh "echo 'Building Flask app image'" 
                 sh 'docker build -t flask-app .'
-                
             }
         }
+
         stage('Build NGINX Image') {
             steps {
                 sh "echo 'Building nginx image'" 
                 sh 'docker build -t mynginx -f Dockerfilenginx .'
-                
             }
         }
+
         stage('Run Flask App Container') {
             steps {
                 echo "Running Flask app container"
                 sh "docker run -d --network flasknetwork --name flask-app flask-app"
             }
         }
+
         stage('Run NGINX Container') {
             steps {
                 echo "Running NGINX container"
-                sh "docker run -d -p 80:80 --network flasknetwork --name mynginx mynginx "
-
+                sh "docker run -d -p 80:80 --network flasknetwork --name mynginx mynginx"
+            }
+        }
 
         stage('Trivy Time') {
             steps {
                 echo "Running Trivy"
-                sh "trivy fs . "
+                sh "trivy fs ."
+            }
+        }
 
-      
         stage('test') {
             steps {
                 echo 'Running Tests'
                 script {
                     try {
-                    sh '''
-                    #Set up the virtual environment
-                    python3 -m venv .venv
+                        sh '''
+                        # Set up the virtual environment
+                        python3 -m venv .venv
 
-                    # Activate the virtual environment
-                    source .venv/bin/activate
+                        # Activate the virtual environment
+                        source .venv/bin/activate
 
-                    # Install dependencies
-                    pip install -r requirements.txt
+                        # Install dependencies
+                        pip install -r requirements.txt
 
-                    # Run tests
-                    python3 -m unittest discover -s tests
+                        # Run tests
+                        python3 -m unittest discover -s tests
 
-                    # Deactivate the virtual environment
-                    deactivate
-                '''
-                        } 
-                catch (Exception e) {
-                echo "Error: Test stage failed - ${e}"
-                // Optionally mark the build as unstable or failed
-                currentBuild.result = 'FAILURE'
+                        # Deactivate the virtual environment
+                        deactivate
+                        '''
+                    } catch (Exception e) {
+                        echo "Error: Test stage failed - ${e}"
+                        // Optionally mark the build as unstable or failed
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
             }
         }
     }
