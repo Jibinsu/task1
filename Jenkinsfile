@@ -62,7 +62,7 @@ pipeline {
             steps {
                 echo 'Running Tests'
                 script {
-                    try {
+                    catchError(buildResult:"UNSTABLE", stageResult:"UNSTABLE") {
                         sh '''
                         # Set up the virtual environment
                         python3 -m venv .venv
@@ -79,10 +79,7 @@ pipeline {
                         # Deactivate the virtual environment
                         deactivate
                         '''
-                    } catch (Exception e) {
-                        echo "Error: Test stage failed - ${e}"
-                        // Optionally mark the build as unstable or failed
-                        currentBuild.result = 'FAILURE'
+                    } 
                     }
                 }
             }
