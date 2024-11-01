@@ -48,6 +48,20 @@ pipeline {
             steps {
                 echo "Running NGINX container"
                 sh "docker run -d -p 80:80 --network flasknetwork --name mynginx mynginx "
+
+
+        stage('Trivy Time') {
+            steps {
+                echo "Running Trivy"
+                sh "trivy fs . "
+
+        stage('test')
+            steps{
+                script{ 
+                sh '''
+                    python3 -m venv .venv venv/bin/activate pip install -r requirements.txt python3 -m unittest discover -s tests .deactivate
+                '''
+                }
             }
         }
     }
