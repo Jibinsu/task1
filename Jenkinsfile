@@ -54,8 +54,13 @@ pipeline {
         stage('Trivy Time') {
             steps {
                 echo "Running Trivy"
-                sh "trivy fs ."
+                sh "trivy fs -f json -o results.json . "
             }
+            post{
+                always {
+                        archiveArtifacts artifacts: 'results.json', onlyIfSuccessful: true
+                }
+            }       
         }
 
         stage('test') {
