@@ -74,7 +74,7 @@ pipeline {
                         pip install -r requirements.txt
 
                         # Run tests
-                        python3 -m unittest discover -s tests
+                        python3 -m unittest test_flask.py
 
                         # Deactivate the virtual environment
                         deactivate
