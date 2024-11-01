@@ -55,13 +55,33 @@ pipeline {
                 echo "Running Trivy"
                 sh "trivy fs . "
 
-        stage('test')
-            steps{
-                script{ 
-                sh '''
-                    python3 -m venv .venv venv/bin/activate pip install -r requirements.txt python3 -m unittest discover -s tests .deactivate
+      
+        stage('test') {
+            steps {
+                echo 'Running Tests'
+                script {
+                    try {
+                    sh '''
+                    #Set up the virtual environment
+                    python3 -m venv .venv
+
+                    # Activate the virtual environment
+                    source .venv/bin/activate
+
+                    # Install dependencies
+                    pip install -r requirements.txt
+
+                    # Run tests
+                    python3 -m unittest discover -s tests
+
+                    # Deactivate the virtual environment
+                    deactivate
                 '''
-                }
+            } 
+                catch (Exception e) {
+                echo "Error: Test stage failed - ${e}"
+                // Optionally mark the build as unstable or failed
+                currentBuild.result = 'FAILURE'
             }
         }
     }
