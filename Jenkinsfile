@@ -77,7 +77,7 @@ pipeline {
                     # Deactivate the virtual environment
                     deactivate
                 '''
-            } 
+                        } 
                 catch (Exception e) {
                 echo "Error: Test stage failed - ${e}"
                 // Optionally mark the build as unstable or failed
